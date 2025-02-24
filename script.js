@@ -74,8 +74,14 @@ captureButton.addEventListener('click', () => {
         }
 
         if (photoRoll.length === 3) {
-            rollCanvas.width = canvas.width;
-            rollCanvas.height = canvas.height * 3;
+            const scaleFactor = 0.87; // Mengecilkan foto menjadi 87% dari ukuran asli
+            const spacing = 8; // Jarak antar foto
+            const scaledWidth = canvas.width * scaleFactor;
+            const scaledHeight = canvas.height * scaleFactor;
+
+            rollCanvas.width = scaledWidth;
+            rollCanvas.height = scaledHeight * 3 + spacing * 2; // 3 foto + 2x jarak antar foto
+
             rollContext.fillStyle = rollColorPicker.value;
             rollContext.fillRect(0, 0, rollCanvas.width, rollCanvas.height);
 
@@ -83,7 +89,8 @@ captureButton.addEventListener('click', () => {
                 let img = new Image();
                 img.src = photo;
                 img.onload = () => {
-                    rollContext.drawImage(img, 0, index * canvas.height);
+                    let yPos = index * (scaledHeight + spacing);
+                    rollContext.drawImage(img, 0, yPos, scaledWidth, scaledHeight);
                 };
             });
 
