@@ -14,7 +14,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
-.Panduan h3{
+.Panduan{
     font-family:Lucida Bright, sans-serif;
     color: rgb(121, 43, 66);
     margin: auto;
@@ -22,6 +22,16 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+.Panduan h6{
+    color:rgb(255, 94, 94);
+}
+
+.heart-icon {
+    width: 30px; /* Atur ukuran */
+    height: auto;
+    display: block;
+    margin: 10px auto; /* Tengah */
 }
 
 .container h1{
