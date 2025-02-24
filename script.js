@@ -5,8 +5,9 @@ const downloadLink = document.getElementById('download');
 const context = canvas.getContext('2d');
 
 let currentFilter = 'none';
-const heartSticker = new Image();
-heartSticker.src = 'heart.png';  // Gambar hati, pastikan ada di folder project
+const capturedPhotos = [];
+const maxPhotos = 3;
+const captureInterval = 2000; // Timer antar foto (2 detik)
 
 // Akses kamera
 navigator.mediaDevices.getUserMedia({ video: true })
@@ -22,19 +23,19 @@ function setFilter(filter) {
     currentFilter = filter;
 }
 
+// Fungsi menangkap foto dengan efek filter
+function capturePhoto() {
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = video.videoWidth;
+    tempCanvas.height = video.videoHeight;
+    const tempContext = tempCanvas.getContext('2d');
 
+    tempContext.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
 
-// Tangkap gambar dengan filter & stiker hati
-captureButton.addEventListener('click', async () => {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    // Ambil data gambar
-    let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    let imageData = tempContext.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
     let data = imageData.data;
 
-    // Terapkan filter menggunakan Canvas API
+    // Terapkan filter
     if (currentFilter === 'grayscale') {
         for (let i = 0; i < data.length; i += 4) {
             let avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
@@ -55,47 +56,66 @@ captureButton.addEventListener('click', async () => {
         }
     } else if (currentFilter === 'brightness') {
         for (let i = 0; i < data.length; i += 4) {
-            data[i] = data[i] * 1.5; 
-            data[i + 1] = data[i + 1] * 1.5; 
-            data[i + 2] = data[i + 2] * 1.5; 
+            data[i] = Math.min(data[i] * 1.5, 255);
+            data[i + 1] = Math.min(data[i + 1] * 1.5, 255);
+            data[i + 2] = Math.min(data[i + 2] * 1.5, 255);
         }
     }
 
-    // Simpan perubahan filter ke canvas
-    context.putImageData(imageData, 0, 0);
+    tempContext.putImageData(imageData, 0, 0);
 
-    // Deteksi wajah (Face Detection API)
-    if ('FaceDetector' in window) {
-        const faceDetector = new FaceDetector();
-        const faces = await faceDetector.detect(video);
-        
-        faces.forEach(face => {
-            const x = face.boundingBox.x;
-            const y = face.boundingBox.y;
-            const w = face.boundingBox.width;
-            const h = face.boundingBox.height;
+    return tempCanvas.toDataURL('image/png');
+}
 
-            // Gambar stiker hati di atas kedua mata
-            context.drawImage(heartSticker, x + w * 0.2, y + h * 0.25, w * 0.2, h * 0.2);
-            context.drawImage(heartSticker, x + w * 0.6, y + h * 0.25, w * 0.2, h * 0.2);
-        });
-    } else {
-        console.warn('Face Detection API tidak didukung di browser ini.');
+// Fungsi untuk mengambil 3 foto otomatis dengan interval
+function startAutoCapture() {
+    capturedPhotos.length = 0; // Reset foto lama
+    let count = 0;
+
+    function takePhoto() {
+        if (count < maxPhotos) {
+            capturedPhotos.push(capturePhoto());
+            count++;
+            if (count < maxPhotos) {
+                setTimeout(takePhoto, captureInterval);
+            } else {
+                createCollage();
+            }
+        }
     }
 
-    // Set hasil gambar untuk diunduh
-    downloadLink.href = canvas.toDataURL('image/png');
-    downloadLink.style.display = 'block';
-});
+    takePhoto();
+}
 
-    
-    // Ambil tanggal saat ini dalam format YYYYMMDD
-const today = new Date();
-const formattedDate = today.getFullYear().toString() + 
-                      String(today.getMonth() + 1).padStart(2, '0') + 
-                      String(today.getDate()).padStart(2, '0');
+// Fungsi membuat kolase dari 3 foto
+function createCollage() {
+    if (capturedPhotos.length === 0) return;
 
-// Set nama file sesuai format: yourSelfie_YYYYMMDD.png
-downloadLink.download = `SelfieMu _DiTanggal_${formattedDate}.png`; 
-downloadLink.href = canvas.toDataURL('image/png');
-downloadLink.style.display = 'block';
+    const photoWidth = video.videoWidth;
+    const photoHeight = video.videoHeight;
+    const spacing = 10;
+    const collageHeight = (photoHeight * maxPhotos) + (spacing * (maxPhotos - 1));
+
+    canvas.width = photoWidth;
+    canvas.height = collageHeight;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    capturedPhotos.forEach((photo, index) => {
+        const img = new Image();
+        img.src = photo;
+        img.onload = () => {
+            context.drawImage(img, 0, index * (photoHeight + spacing), photoWidth, photoHeight);
+            
+            // Setelah semua gambar digambar, aktifkan tombol download
+            if (index === capturedPhotos.length - 1) {
+                setTimeout(() => {
+                    downloadLink.href = canvas.toDataURL('image/png');
+                    downloadLink.style.display = 'block';
+                }, 500);
+            }
+        };
+    });
+}
+
+// Event listener untuk tombol capture
+captureButton.addEventListener('click', startAutoCapture);
