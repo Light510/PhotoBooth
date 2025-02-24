@@ -1,0 +1,136 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #e99a9a;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+    background: #ee9090;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.Panduan {
+    font-family: Lucida Bright, sans-serif;
+    color: rgb(121, 43, 66);
+    margin: auto;
+    background: #ee9090;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.stroke-text {
+    color: rgb(255, 94, 94);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.heart-icon {
+    width: 30px;
+    height: auto;
+    display: block;
+    margin: 10px auto;
+}
+
+video, canvas {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transform: scaleX(-1);
+}
+
+button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background: #218838;
+}
+
+a {
+    display: block;
+    margin-top: 10px;
+    padding: 10px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+a:hover {
+    background: #0056b3;
+}
+
+.filters button {
+    background: #e45050;
+    color: white;
+    margin: 5px;
+    padding: 8px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.filters button:hover {
+    background: #e71d1d;
+}
+
+.roll-options {
+    margin-top: 15px;
+}
+
+/* Style tambahan untuk countdown */
+#countdown {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 10px;
+}
+
+#counter {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 10px;
+}
+
+/* Style untuk tombol warna roll */
+.color-picker {
+    margin-top: 15px;
+}
+
+.color-btn {
+    background: #ffcc00;
+    color: black;
+    padding: 8px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 5px;
+}
+
+.color-btn:hover {
+    background: #e6b800;
+}
+
+/* Untuk tampilan responsif */
+@media (max-width: 600px) {
+    .container {
+        max-width: 90%;
+    }
+}
