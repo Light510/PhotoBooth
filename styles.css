@@ -24,6 +24,8 @@ video, canvas {
     width: 100%;
     border-radius: 10px;
     margin-bottom: 10px;
+    transform: scaleX(-1); /* Flip horizontal */
+    -webkit-transform: scaleX(-1); /* Untuk Safari */
 }
 
 button {
