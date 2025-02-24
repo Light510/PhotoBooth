@@ -9,11 +9,22 @@
 <body>
     <div class="container">
         <h1>Photobooth Selfie</h1>
+        
         <video id="video" autoplay></video>
         <button id="capture">Ambil Foto</button>
+
+        <div class="filters">
+            <button onclick="setFilter('none')">Normal</button>
+            <button onclick="setFilter('grayscale')">Grayscale</button>
+            <button onclick="setFilter('sepia')">Sepia</button>
+            <button onclick="setFilter('invert')">Invert</button>
+            <button onclick="setFilter('brightness')">Brightness</button>
+        </div>
+
         <canvas id="canvas"></canvas>
         <a id="download" download="selfie.png">Download</a>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
