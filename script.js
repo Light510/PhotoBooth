@@ -2,12 +2,13 @@ const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const captureButton = document.getElementById('capture');
 const downloadLink = document.getElementById('download');
+const timerDisplay = document.getElementById('timer-display');
 const context = canvas.getContext('2d');
 
 let currentFilter = 'none';
 const capturedPhotos = [];
 const maxPhotos = 3;
-const captureInterval = 3000; // Timer antar foto (2 detik)
+const captureInterval = 2000; // Timer antar foto (2 detik)
 
 // Akses kamera
 navigator.mediaDevices.getUserMedia({ video: true })
@@ -67,20 +68,45 @@ function capturePhoto() {
     return tempCanvas.toDataURL('image/png');
 }
 
-// Fungsi untuk mengambil 3 foto otomatis dengan interval
+// Fungsi menampilkan timer
+function showTimer(seconds, callback) {
+    timerDisplay.style.display = 'block';
+    let count = seconds;
+
+    function updateTimer() {
+        if (count > 0) {
+            timerDisplay.innerText = count;
+            timerDisplay.style.animation = 'none'; 
+            setTimeout(() => {
+                timerDisplay.style.animation = 'countdown-animation 1s ease-in-out';
+            }, 10);
+            count--;
+            setTimeout(updateTimer, 1000);
+        } else {
+            timerDisplay.style.display = 'none';
+            callback();
+        }
+    }
+
+    updateTimer();
+}
+
+// Fungsi untuk mengambil 3 foto otomatis dengan timer di layar
 function startAutoCapture() {
     capturedPhotos.length = 0; // Reset foto lama
     let count = 0;
 
     function takePhoto() {
         if (count < maxPhotos) {
-            capturedPhotos.push(capturePhoto());
-            count++;
-            if (count < maxPhotos) {
-                setTimeout(takePhoto, captureInterval);
-            } else {
-                createCollage();
-            }
+            showTimer(3, () => {
+                capturedPhotos.push(capturePhoto());
+                count++;
+                if (count < maxPhotos) {
+                    setTimeout(takePhoto, captureInterval);
+                } else {
+                    createCollage();
+                }
+            });
         }
     }
 
@@ -106,7 +132,6 @@ function createCollage() {
         img.onload = () => {
             context.drawImage(img, 0, index * (photoHeight + spacing), photoWidth, photoHeight);
             
-            // Setelah semua gambar digambar, aktifkan tombol download
             if (index === capturedPhotos.length - 1) {
                 setTimeout(() => {
                     downloadLink.href = canvas.toDataURL('image/png');
@@ -117,5 +142,4 @@ function createCollage() {
     });
 }
 
-// Event listener untuk tombol capture
 captureButton.addEventListener('click', startAutoCapture);

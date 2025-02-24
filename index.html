@@ -10,7 +10,11 @@
     <div class="container">
         <h1>Photobooth Selfie</h1>
         
-        <video id="video" autoplay></video>
+        <div class="video-container">
+            <video id="video" autoplay></video>
+            <div id="timer-display">3</div> <!-- Timer akan muncul di sini -->
+        </div>
+
         <button id="capture">Click Me!!</button>
 
         <div class="filters">
@@ -19,17 +23,17 @@
             <button onclick="setFilter('sepia')">Sepia</button>
             <button onclick="setFilter('invert')">Invert</button>
             <button onclick="setFilter('brightness')">Brightness</button>
-            
         </div>
 
         <canvas id="canvas"></canvas>
-        <a id="download" download="selfie.png">Download</a>
+        <a id="download" download="selfie_collage.png">Download</a>
     </div>
-<div class="Panduan">
-    <h3>Panduan Pemakaian Filter, Klik filter terlebih dahulu lalu ambil foto!</h3>
-    <h6>Made by Atta</h6>
-    <img src="heart.png" alt="Heart" class="heart-icon">
-</div>
+
+    <div class="Panduan">
+        <h3>Panduan Pemakaian: Klik filter terlebih dahulu lalu tekan Click Me untuk mengambil 3 foto otomatis!</h3>
+        <h6>Made by Atta</h6>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
