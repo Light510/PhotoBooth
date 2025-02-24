@@ -5,6 +5,8 @@ const downloadLink = document.getElementById('download');
 const context = canvas.getContext('2d');
 
 let currentFilter = 'none';
+const heartSticker = new Image();
+heartSticker.src = 'heart.png';  // Gambar hati, pastikan ada di folder project
 
 // Akses kamera
 navigator.mediaDevices.getUserMedia({ video: true })
@@ -20,8 +22,8 @@ function setFilter(filter) {
     currentFilter = filter;
 }
 
-// Tangkap gambar dengan filter
-captureButton.addEventListener('click', () => {
+// Tangkap gambar dengan filter & stiker hati
+captureButton.addEventListener('click', async () => {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -45,20 +47,45 @@ captureButton.addEventListener('click', () => {
         }
     } else if (currentFilter === 'invert') {
         for (let i = 0; i < data.length; i += 4) {
-            data[i] = 255 - data[i];     // Red
-            data[i + 1] = 255 - data[i + 1]; // Green
-            data[i + 2] = 255 - data[i + 2]; // Blue
+            data[i] = 255 - data[i];     
+            data[i + 1] = 255 - data[i + 1]; 
+            data[i + 2] = 255 - data[i + 2]; 
         }
     } else if (currentFilter === 'brightness') {
         for (let i = 0; i < data.length; i += 4) {
-            data[i] = data[i] * 1.5; // Red
-            data[i + 1] = data[i + 1] * 1.5; // Green
-            data[i + 2] = data[i + 2] * 1.5; // Blue
+            data[i] = data[i] * 1.5; 
+            data[i + 1] = data[i + 1] * 1.5; 
+            data[i + 2] = data[i + 2] * 1.5; 
         }
     }
 
     // Simpan perubahan filter ke canvas
     context.putImageData(imageData, 0, 0);
+
+    // Deteksi wajah (Face Detection API)
+    if ('FaceDetector' in window) {
+        const faceDetector = new FaceDetector();
+        const faces = await faceDetector.detect(video);
+        
+        faces.forEach(face => {
+            const x = face.boundingBox.x;
+            const y = face.boundingBox.y;
+            const w = face.boundingBox.width;
+            const h = face.boundingBox.height;
+
+            // Gambar stiker hati di atas kedua mata
+            context.drawImage(heartSticker, x + w * 0.2, y + h * 0.25, w * 0.2, h * 0.2);
+            context.drawImage(heartSticker, x + w * 0.6, y + h * 0.25, w * 0.2, h * 0.2);
+        });
+    } else {
+        console.warn('Face Detection API tidak didukung di browser ini.');
+    }
+
+    // Set hasil gambar untuk diunduh
+    downloadLink.href = canvas.toDataURL('image/png');
+    downloadLink.style.display = 'block';
+});
+
     
     // Ambil tanggal saat ini dalam format YYYYMMDD
 const today = new Date();
@@ -70,5 +97,3 @@ const formattedDate = today.getFullYear().toString() +
 downloadLink.download = `yourSelfie_${formattedDate}.png`; 
 downloadLink.href = canvas.toDataURL('image/png');
 downloadLink.style.display = 'block';
-
-});
