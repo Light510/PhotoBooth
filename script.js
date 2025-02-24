@@ -94,6 +94,6 @@ const formattedDate = today.getFullYear().toString() +
                       String(today.getDate()).padStart(2, '0');
 
 // Set nama file sesuai format: yourSelfie_YYYYMMDD.png
-downloadLink.download = `yourSelfie_${formattedDate}.png`; 
+downloadLink.download = `SelfieMu _DiTanggal_${formattedDate}.png`; 
 downloadLink.href = canvas.toDataURL('image/png');
 downloadLink.style.display = 'block';
