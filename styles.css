@@ -14,8 +14,9 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
-.Panduan{
-    font-family:Lucida Bright, sans-serif;
+
+.Panduan {
+    font-family: Lucida Bright, sans-serif;
     color: rgb(121, 43, 66);
     margin: auto;
     background: #ee9090;
@@ -23,29 +24,31 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
-.Panduan h6{
-    color:rgb(255, 94, 94);
+
+.Panduan h6 {
+    color: rgb(255, 94, 94);
+    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+    font-weight: bold;
 }
 
 .heart-icon {
-    width: 30px; /* Atur ukuran */
+    width: 30px;
     height: auto;
     display: block;
-    margin: 10px auto; /* Tengah */
+    margin: 10px auto;
 }
 
-.container h1{
+.container h1 {
     font-family: Brush Script MT;
-    color:aliceblue;
-    text-shadow: #00000080;
+    color: aliceblue;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 video, canvas {
     width: 100%;
     border-radius: 10px;
     margin-bottom: 10px;
-    transform: scaleX(-1); /* Flip horizontal */
-    -webkit-transform: scaleX(-1); /* Untuk Safari */
+    transform: scaleX(-1);
 }
 
 button {
@@ -88,4 +91,11 @@ a:hover {
 
 .filters button:hover {
     background: #e71d1d;
+}
+
+.countdown {
+    font-size: 40px;
+    font-weight: bold;
+    display: none;
+    color: white;
 }

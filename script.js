@@ -3,10 +3,15 @@ const canvas = document.getElementById('canvas');
 const captureButton = document.getElementById('capture');
 const downloadLink = document.getElementById('download');
 const context = canvas.getContext('2d');
+const countdownText = document.getElementById('countdown');
+const rollCanvas = document.createElement('canvas');
+const rollContext = rollCanvas.getContext('2d');
 
 let currentFilter = 'none';
 const heartSticker = new Image();
-heartSticker.src = 'heart.png';  // Gambar hati, pastikan ada di folder project
+heartSticker.src = 'heart.png';  // Pastikan gambar ada di folder proyek
+
+let capturedImages = []; // Menyimpan 3 foto untuk digabungkan
 
 // Akses kamera
 navigator.mediaDevices.getUserMedia({ video: true })
@@ -22,10 +27,30 @@ function setFilter(filter) {
     currentFilter = filter;
 }
 
+// Fungsi untuk countdown sebelum foto diambil
+function startCountdown(callback) {
+    let count = 3;
+    countdownText.innerText = count;
+    countdownText.style.display = 'block';
 
+    let countdownInterval = setInterval(() => {
+        count--;
+        if (count === 0) {
+            countdownText.innerText = "Klik!";
+        } else {
+            countdownText.innerText = count;
+        }
 
-// Tangkap gambar dengan filter & stiker hati
-captureButton.addEventListener('click', async () => {
+        if (count < 0) {
+            clearInterval(countdownInterval);
+            countdownText.style.display = 'none';
+            callback();
+        }
+    }, 1000);
+}
+
+// Fungsi menangkap gambar
+async function captureImage() {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -34,7 +59,7 @@ captureButton.addEventListener('click', async () => {
     let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
     let data = imageData.data;
 
-    // Terapkan filter menggunakan Canvas API
+    // Terapkan filter
     if (currentFilter === 'grayscale') {
         for (let i = 0; i < data.length; i += 4) {
             let avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
@@ -47,24 +72,11 @@ captureButton.addEventListener('click', async () => {
             data[i + 1] = r * 0.349 + g * 0.686 + b * 0.168;
             data[i + 2] = r * 0.272 + g * 0.534 + b * 0.131;
         }
-    } else if (currentFilter === 'invert') {
-        for (let i = 0; i < data.length; i += 4) {
-            data[i] = 255 - data[i];     
-            data[i + 1] = 255 - data[i + 1]; 
-            data[i + 2] = 255 - data[i + 2]; 
-        }
-    } else if (currentFilter === 'brightness') {
-        for (let i = 0; i < data.length; i += 4) {
-            data[i] = data[i] * 1.5; 
-            data[i + 1] = data[i + 1] * 1.5; 
-            data[i + 2] = data[i + 2] * 1.5; 
-        }
     }
 
-    // Simpan perubahan filter ke canvas
     context.putImageData(imageData, 0, 0);
 
-    // Deteksi wajah (Face Detection API)
+    // Deteksi wajah dan tambahkan stiker hati
     if ('FaceDetector' in window) {
         const faceDetector = new FaceDetector();
         const faces = await faceDetector.detect(video);
@@ -75,27 +87,65 @@ captureButton.addEventListener('click', async () => {
             const w = face.boundingBox.width;
             const h = face.boundingBox.height;
 
-            // Gambar stiker hati di atas kedua mata
             context.drawImage(heartSticker, x + w * 0.2, y + h * 0.25, w * 0.2, h * 0.2);
             context.drawImage(heartSticker, x + w * 0.6, y + h * 0.25, w * 0.2, h * 0.2);
         });
-    } else {
-        console.warn('Face Detection API tidak didukung di browser ini.');
     }
 
-    // Set hasil gambar untuk diunduh
-    downloadLink.href = canvas.toDataURL('image/png');
+    // Simpan gambar ke dalam array
+    capturedImages.push(canvas.toDataURL('image/png'));
+
+    if (capturedImages.length === 3) {
+        mergePhotos();
+    }
+}
+
+// Fungsi untuk menggabungkan 3 foto menjadi 1 roll panjang
+function mergePhotos() {
+    rollCanvas.width = canvas.width;
+    rollCanvas.height = canvas.height * 3;
+
+    // Ganti warna pinggiran roll sesuai pilihan
+    rollContext.fillStyle = selectedBorderColor;
+    rollContext.fillRect(0, 0, rollCanvas.width, rollCanvas.height);
+
+    // Tempelkan 3 foto ke dalam roll panjang
+    capturedImages.forEach((imgSrc, index) => {
+        let img = new Image();
+        img.src = imgSrc;
+        img.onload = () => {
+            rollContext.drawImage(img, 0, index * canvas.height, canvas.width, canvas.height);
+            if (index === 2) {
+                downloadRoll();
+            }
+        };
+    });
+
+    // Reset array setelah penggabungan selesai
+    capturedImages = [];
+}
+
+// Fungsi mengunduh hasil foto dalam format roll
+function downloadRoll() {
+    const today = new Date();
+    const formattedDate = today.getFullYear().toString() + 
+                          String(today.getMonth() + 1).padStart(2, '0') + 
+                          String(today.getDate()).padStart(2, '0');
+
+    downloadLink.href = rollCanvas.toDataURL('image/png');
+    downloadLink.download = `yourSelfie_${formattedDate}.png`;
     downloadLink.style.display = 'block';
+}
+
+// Pilihan warna pinggiran roll
+let selectedBorderColor = '#000000'; // Default warna hitam
+document.getElementById('border-color').addEventListener('change', (e) => {
+    selectedBorderColor = e.target.value;
 });
 
-    
-    // Ambil tanggal saat ini dalam format YYYYMMDD
-const today = new Date();
-const formattedDate = today.getFullYear().toString() + 
-                      String(today.getMonth() + 1).padStart(2, '0') + 
-                      String(today.getDate()).padStart(2, '0');
-
-// Set nama file sesuai format: yourSelfie_YYYYMMDD.png
-downloadLink.download = `SelfieMu _DiTanggal_${formattedDate}.png`; 
-downloadLink.href = canvas.toDataURL('image/png');
-downloadLink.style.display = 'block';
+// Event listener untuk tombol ambil foto
+captureButton.addEventListener('click', () => {
+    if (capturedImages.length < 3) {
+        startCountdown(captureImage);
+    }
+});

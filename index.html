@@ -9,8 +9,9 @@
 <body>
     <div class="container">
         <h1>Photobooth Selfie</h1>
-        
+
         <video id="video" autoplay></video>
+        <p id="countdown" class="countdown"></p>
         <button id="capture">Ambil Foto</button>
 
         <div class="filters">
@@ -19,17 +20,25 @@
             <button onclick="setFilter('sepia')">Sepia</button>
             <button onclick="setFilter('invert')">Invert</button>
             <button onclick="setFilter('brightness')">Brightness</button>
-            
         </div>
 
         <canvas id="canvas"></canvas>
         <a id="download" download="selfie.png">Download</a>
+
+        <label for="border-color">Pilih Warna Pinggiran Roll:</label>
+        <input type="color" id="border-color" value="#000000">
     </div>
-<div class="Panduan">
-    <h3>Panduan Pemakaian Filter, Klik filter terlebih dahulu lalu ambil foto!</h3>
-    <h6>Made by Atta</h6>
-    <img src="heart.png" alt="Heart" class="heart-icon">
-</div>
+
+    <div class="Panduan">
+        <h3>Panduan Pemakaian:</h3>
+        <p>1. Pilih filter sebelum mengambil foto.</p>
+        <p>2. Klik tombol "Ambil Foto", akan ada hitungan mundur sebelum foto diambil.</p>
+        <p>3. Setelah 3 foto diambil, hasilnya akan digabungkan menjadi roll panjang.</p>
+        <p>4. Bisa memilih warna pinggiran roll sebelum download.</p>
+        <h6>Made by Atta</h6>
+        <img src="heart.png" alt="Heart" class="heart-icon">
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
