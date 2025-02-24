@@ -22,6 +22,8 @@ function setFilter(filter) {
     currentFilter = filter;
 }
 
+
+
 // Tangkap gambar dengan filter & stiker hati
 captureButton.addEventListener('click', async () => {
     canvas.width = video.videoWidth;

@@ -14,6 +14,16 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
+.Panduan h3{
+    font-family:Lucida Bright, sans-serif;
+    color: rgb(121, 43, 66);
+    margin: auto;
+    background: #ee9090;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
 .container h1{
     font-family: Brush Script MT;
     color:aliceblue;
