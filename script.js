@@ -60,7 +60,15 @@ captureButton.addEventListener('click', () => {
     // Simpan perubahan filter ke canvas
     context.putImageData(imageData, 0, 0);
     
-    // Set hasil gambar untuk diunduh
-    downloadLink.href = canvas.toDataURL('image/png');
-    downloadLink.style.display = 'block';
+    // Ambil tanggal saat ini dalam format YYYYMMDD
+const today = new Date();
+const formattedDate = today.getFullYear().toString() + 
+                      String(today.getMonth() + 1).padStart(2, '0') + 
+                      String(today.getDate()).padStart(2, '0');
+
+// Set nama file sesuai format: yourSelfie_YYYYMMDD.png
+downloadLink.download = `yourSelfie_${formattedDate}.png`; 
+downloadLink.href = canvas.toDataURL('image/png');
+downloadLink.style.display = 'block';
+
 });
