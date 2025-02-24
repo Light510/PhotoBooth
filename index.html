@@ -1,3 +1,7 @@
+TML (index.html)
+html
+Copy
+Edit
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -9,10 +13,10 @@
 <body>
     <div class="container">
         <h1>Photobooth Selfie</h1>
-
+        
         <video id="video" autoplay></video>
-        <p id="countdown" class="countdown"></p>
         <button id="capture">Ambil Foto</button>
+        <p id="countdown"></p> <!-- Countdown ditampilkan di sini -->
 
         <div class="filters">
             <button onclick="setFilter('none')">Normal</button>
@@ -25,8 +29,14 @@
         <canvas id="canvas"></canvas>
         <a id="download" download="selfie.png">Download</a>
 
-        <label for="border-color">Pilih Warna Pinggiran Roll:</label>
-        <input type="color" id="border-color" value="#000000">
+        <!-- Pilihan warna roll film -->
+        <div class="roll-options">
+            <label for="rollColor">Warna Roll Film:</label>
+            <input type="color" id="rollColor" value="#ffffff">
+        </div>
+
+        <canvas id="rollCanvas"></canvas> <!-- Canvas untuk roll film -->
+        <a id="downloadRoll" download="roll_film.png">Download Roll</a>
     </div>
 
     <div class="Panduan">

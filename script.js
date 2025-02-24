@@ -1,19 +1,17 @@
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
+const rollCanvas = document.getElementById('rollCanvas');
 const captureButton = document.getElementById('capture');
 const downloadLink = document.getElementById('download');
+const downloadRoll = document.getElementById('downloadRoll');
 const context = canvas.getContext('2d');
-const countdownText = document.getElementById('countdown');
-const rollCanvas = document.createElement('canvas');
 const rollContext = rollCanvas.getContext('2d');
+const countdownText = document.getElementById('countdown');
+const rollColorPicker = document.getElementById('rollColor');
 
 let currentFilter = 'none';
-const heartSticker = new Image();
-heartSticker.src = 'heart.png';  // Pastikan gambar ada di folder proyek
+let photoRoll = []; // Menyimpan foto untuk roll film
 
-let capturedImages = []; // Menyimpan 3 foto untuk digabungkan
-
-// Akses kamera
 navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => {
         video.srcObject = stream;
@@ -22,44 +20,13 @@ navigator.mediaDevices.getUserMedia({ video: true })
         console.error("Gagal mengakses kamera:", err);
     });
 
-// Fungsi untuk mengatur filter sebelum mengambil foto
 function setFilter(filter) {
     currentFilter = filter;
 }
 
-// Fungsi untuk countdown sebelum foto diambil
-function startCountdown(callback) {
-    let count = 3;
-    countdownText.innerText = count;
-    countdownText.style.display = 'block';
-
-    let countdownInterval = setInterval(() => {
-        count--;
-        if (count === 0) {
-            countdownText.innerText = "Klik!";
-        } else {
-            countdownText.innerText = count;
-        }
-
-        if (count < 0) {
-            clearInterval(countdownInterval);
-            countdownText.style.display = 'none';
-            callback();
-        }
-    }, 1000);
-}
-
-// Fungsi menangkap gambar
-async function captureImage() {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    // Ambil data gambar
-    let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+function applyFilter(imageData) {
     let data = imageData.data;
 
-    // Terapkan filter
     if (currentFilter === 'grayscale') {
         for (let i = 0; i < data.length; i += 4) {
             let avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
@@ -73,79 +40,55 @@ async function captureImage() {
             data[i + 2] = r * 0.272 + g * 0.534 + b * 0.131;
         }
     }
-
     context.putImageData(imageData, 0, 0);
-
-    // Deteksi wajah dan tambahkan stiker hati
-    if ('FaceDetector' in window) {
-        const faceDetector = new FaceDetector();
-        const faces = await faceDetector.detect(video);
-        
-        faces.forEach(face => {
-            const x = face.boundingBox.x;
-            const y = face.boundingBox.y;
-            const w = face.boundingBox.width;
-            const h = face.boundingBox.height;
-
-            context.drawImage(heartSticker, x + w * 0.2, y + h * 0.25, w * 0.2, h * 0.2);
-            context.drawImage(heartSticker, x + w * 0.6, y + h * 0.25, w * 0.2, h * 0.2);
-        });
-    }
-
-    // Simpan gambar ke dalam array
-    capturedImages.push(canvas.toDataURL('image/png'));
-
-    if (capturedImages.length === 3) {
-        mergePhotos();
-    }
 }
 
-// Fungsi untuk menggabungkan 3 foto menjadi 1 roll panjang
-function mergePhotos() {
-    rollCanvas.width = canvas.width;
-    rollCanvas.height = canvas.height * 3;
+// Fungsi countdown sebelum mengambil foto
+function startCountdown(callback) {
+    let count = 3;
+    countdownText.innerText = count;
 
-    // Ganti warna pinggiran roll sesuai pilihan
-    rollContext.fillStyle = selectedBorderColor;
-    rollContext.fillRect(0, 0, rollCanvas.width, rollCanvas.height);
-
-    // Tempelkan 3 foto ke dalam roll panjang
-    capturedImages.forEach((imgSrc, index) => {
-        let img = new Image();
-        img.src = imgSrc;
-        img.onload = () => {
-            rollContext.drawImage(img, 0, index * canvas.height, canvas.width, canvas.height);
-            if (index === 2) {
-                downloadRoll();
-            }
-        };
-    });
-
-    // Reset array setelah penggabungan selesai
-    capturedImages = [];
+    let interval = setInterval(() => {
+        count--;
+        countdownText.innerText = count;
+        if (count === 0) {
+            clearInterval(interval);
+            countdownText.innerText = "";
+            callback();
+        }
+    }, 1000);
 }
 
-// Fungsi mengunduh hasil foto dalam format roll
-function downloadRoll() {
-    const today = new Date();
-    const formattedDate = today.getFullYear().toString() + 
-                          String(today.getMonth() + 1).padStart(2, '0') + 
-                          String(today.getDate()).padStart(2, '0');
-
-    downloadLink.href = rollCanvas.toDataURL('image/png');
-    downloadLink.download = `yourSelfie_${formattedDate}.png`;
-    downloadLink.style.display = 'block';
-}
-
-// Pilihan warna pinggiran roll
-let selectedBorderColor = '#000000'; // Default warna hitam
-document.getElementById('border-color').addEventListener('change', (e) => {
-    selectedBorderColor = e.target.value;
-});
-
-// Event listener untuk tombol ambil foto
+// Menangkap gambar & menambahkannya ke roll film
 captureButton.addEventListener('click', () => {
-    if (capturedImages.length < 3) {
-        startCountdown(captureImage);
-    }
+    startCountdown(() => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        applyFilter(imageData);
+
+        if (photoRoll.length < 3) {
+            photoRoll.push(canvas.toDataURL('image/png'));
+        }
+
+        if (photoRoll.length === 3) {
+            rollCanvas.width = canvas.width;
+            rollCanvas.height = canvas.height * 3;
+            rollContext.fillStyle = rollColorPicker.value;
+            rollContext.fillRect(0, 0, rollCanvas.width, rollCanvas.height);
+
+            photoRoll.forEach((photo, index) => {
+                let img = new Image();
+                img.src = photo;
+                img.onload = () => {
+                    rollContext.drawImage(img, 0, index * canvas.height);
+                };
+            });
+
+            downloadRoll.href = rollCanvas.toDataURL('image/png');
+            downloadRoll.style.display = 'block';
+        }
+    });
 });
