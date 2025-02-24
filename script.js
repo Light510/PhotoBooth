@@ -7,7 +7,7 @@ const context = canvas.getContext('2d');
 let currentFilter = 'none';
 const capturedPhotos = [];
 const maxPhotos = 3;
-const captureInterval = 2000; // Timer antar foto (2 detik)
+const captureInterval = 3000; // Timer antar foto (2 detik)
 
 // Akses kamera
 navigator.mediaDevices.getUserMedia({ video: true })
