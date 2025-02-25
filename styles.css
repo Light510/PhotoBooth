@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     text-align: center;
     background-color: #e99a9a;
     margin: 0;
@@ -7,13 +7,17 @@ body {
 }
 
 .container {
-    font-family: script MT;
+    font-family: "Pacifico", serif;
+    font-style: thin;
     max-width: 500px;
     margin: auto;
     background: #ee9090;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+.donlot{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .Panduan {
@@ -113,6 +117,6 @@ a:hover {
 }
 
 @keyframes countdown-animation {
-    0% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
     100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
 }
